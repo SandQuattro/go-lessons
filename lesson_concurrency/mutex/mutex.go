@@ -6,8 +6,9 @@ import (
 )
 
 const (
-	unlocked = false
-	locked   = true
+	goroutinesNumber = 1000
+	unlocked         = false
+	locked           = true
 )
 
 type Mutex struct {
@@ -26,8 +27,6 @@ func (m *Mutex) Lock() {
 func (m *Mutex) Unlock() {
 	m.state = unlocked
 }
-
-const goroutinesNumber = 1000
 
 func main() {
 	var mutex Mutex

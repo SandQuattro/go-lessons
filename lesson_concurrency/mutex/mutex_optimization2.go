@@ -6,31 +6,25 @@ import (
 	"sync/atomic"
 )
 
-const (
-	unlocked = false
-	locked   = true
-)
-
-type Mutex struct {
+type AtomicV2Mutex struct {
 	state atomic.Bool
 }
 
 // Lock пытаемся взять мьютекс в цикле (spinlock)
-func (m *Mutex) Lock() {
+func (m *AtomicV2Mutex) Lock() {
 	for !m.state.CompareAndSwap(unlocked, locked) {
 		// iteration by iteration...
 	}
 
 }
 
-func (m *Mutex) Unlock() {
+func (m *AtomicV2Mutex) Unlock() {
 	m.state.Store(unlocked)
 }
 
-const goroutinesNumber = 1000
-
 func main() {
-	var mutex Mutex
+	var mutex AtomicV2Mutex
+
 	wg := sync.WaitGroup{}
 	wg.Add(goroutinesNumber)
 
