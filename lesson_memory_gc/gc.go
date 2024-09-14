@@ -25,6 +25,7 @@ func main() {
 	trace.Start(f)
 	defer trace.Stop()
 
+	// смотрим в рантайме, сколько программа использует памяти
 	var memStat runtime.MemStats
 	runtime.ReadMemStats(&memStat)
 
@@ -42,6 +43,7 @@ func main() {
 		// }
 	}
 
+	// смотрим в рантайме, сколько программа использует памяти
 	var memStatNow runtime.MemStats
 	runtime.ReadMemStats(&memStatNow)
 
