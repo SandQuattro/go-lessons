@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+</head>
+<body>
+<h1>WebSocket Client</h1>
+<h3 id="message">Message</h3>
+
+<script>
+    const ws = new WebSocket("ws://localhost:8080/ws");
+
+    ws.onopen = function () {
+        console.log("Connected to server");
+    };
+
+    ws.onmessage = function (event) {
+        console.log("Message from server:", event.data);
+        document.getElementById("message").innerText = event.data
+    };
+
+    function sendMessage() {
+        const input = document.getElementById("messageInput").value;
+        ws.send(input);
+    }
+</script>
+</body>
+</html>
