@@ -20,10 +20,10 @@ func main() {
 	}
 	defer conn.Close()
 
-	lines := strings.Split(sentence, "\t")
+	lines := strings.Split(sentence, ".")
 
 	for {
-		randomLine := lines[rand.Intn(len(lines))] + "\x09"
+		randomLine := lines[rand.Intn(len(lines))] + ".\x09"
 
 		fmt.Println(randomLine)
 		fmt.Println()

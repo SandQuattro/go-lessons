@@ -23,7 +23,7 @@ func main() {
 				return true
 			},
 		},
-		ch: make(chan string, 10),
+		ch: make(chan string),
 	}
 
 	go func() {
