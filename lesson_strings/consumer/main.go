@@ -59,7 +59,8 @@ func main() {
 
 				fmt.Printf("read %d bytes from client, data:%s\n", numBytes, string(buf[:numBytes]))
 
-				if buf[numBytes-1] == 9 {
+				if buf[numBytes-1] == 10 {
+					fmt.Printf("[INCOMING MESSAGE] %s\n", string(str))
 					server.ch <- fmt.Sprintf("[INCOMING MESSAGE] %s\n", string(str))
 					str = str[len(str):]
 				}
@@ -95,7 +96,11 @@ func (s *Server) handleWs(w http.ResponseWriter, r *http.Request) {
 			}
 		}()
 
-		err = ws.WriteMessage(websocket.TextMessage, []byte(<-s.ch))
+		// Если ws соединение не установлено, здесь мы заблокируемся
+		// в consumer и не сможем считать байты из сокета, может лучше
+		// чтение перенести в из main в данный обработчик...
+		message := <-s.ch
+		err = ws.WriteMessage(websocket.TextMessage, []byte(message))
 		if err != nil {
 			return
 		}
