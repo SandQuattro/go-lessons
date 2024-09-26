@@ -16,7 +16,7 @@ import (
 // 2) bombardier -c 125 -d 1ms -n 100 http://localhost:8080
 // 3) go tool pprof <pprof file>
 // 4) top
-// 5) Если на первом месте у нас runtime.kevent, то это net poller для mac os
+// 5) Если на первом месте у нас runtime.kevent, то это net poller для macOS
 // It's the network poller. There are multiple implementations:
 //
 // epoll for linux
@@ -28,7 +28,8 @@ import (
 // 9) go tool pprof -http=:7272 -diff_base <pprof file old> <pprof file new>
 func main() {
 	server := &http.Server{
-		Addr: ":8080",
+		ReadHeaderTimeout: 5 * time.Second,
+		Addr:              ":8080",
 	}
 
 	ctx, cancelFunc := context.WithCancel(context.Background())
@@ -52,10 +53,9 @@ func main() {
 
 	<-ctx.Done()
 	fmt.Println("Server is shutting down... bye, bye")
-
 }
 
-func handleRoot(w http.ResponseWriter, r *http.Request) {
+func handleRoot(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Hello"))
+	_, _ = w.Write([]byte("Hello"))
 }
