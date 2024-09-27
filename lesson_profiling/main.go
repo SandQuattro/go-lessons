@@ -11,8 +11,14 @@ import (
 	"time"
 )
 
-// 1) curl -location 'http://localhost:8080/debug/pprof/profile?seconds=10' CPU ИЛИ
-// 1) curl -location 'http://localhost:8080/debug/pprof/heap?seconds=5'
+type MyStruct struct {
+	data [1 << 20]byte // 1 MB данных
+}
+
+// 1) go tool pprof lesson_profiling/main.go http://127.0.0.1:8080/debug/pprof/profile
+// 1) curl -o cpu.pprof -location 'http://localhost:8080/debug/pprof/profile?seconds=10' CPU ИЛИ
+// 1) curl -o heap.pprof -location 'http://localhost:8080/debug/pprof/heap?seconds=10' HEAP ИЛИ
+// 1) curl -o go.pprof -location 'http://127.0.0.1:8080/debug/pprof/goroutine?seconds=10' GOROUTINE
 // 2) bombardier -c 125 -d 1ms -n 100 http://localhost:8080
 // 3) go tool pprof <pprof file>
 // 4) top
@@ -24,8 +30,12 @@ import (
 // 6) выполняем команду list runtime.kevent: и видим вызов C функции kevent_trampoline:
 // ret := libcCall(unsafe.Pointer(abi.FuncPCABI0(kevent_trampoline)), unsafe.Pointer(&kq))
 // 7) web
+
+// Открываем профили в браузере
 // 8) go tool pprof -http=:7272 <pprof file>
 // 9) go tool pprof -http=:7272 -diff_base <pprof file old> <pprof file new>
+// 10) go tool pprof lesson_profiling/main.go http://127.0.0.1:8080/debug/pprof/goroutine
+// 10) go tool pprof -http=:7272 <pprof file>
 func main() {
 	server := &http.Server{
 		ReadHeaderTimeout: 5 * time.Second,
@@ -56,6 +66,14 @@ func main() {
 }
 
 func handleRoot(w http.ResponseWriter, _ *http.Request) {
+	for i := 0; i < 100; i++ {
+		s := new(MyStruct)
+		for j := 0; j < len(s.data); j++ {
+			s.data[j] = byte(i)
+		}
+		fmt.Printf("Allocated %d MB\n", i+1)
+	}
+
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("Hello"))
 }
