@@ -15,16 +15,16 @@ type MyPoolStruct struct {
 
 // go tool trace trace.out
 func main() {
+	// Запись в trace файл
+	f, _ := os.Create("trace.out")
+	trace.Start(f)
+	defer trace.Stop()
+
 	// отслеживаем изменение в куче
 	debug.SetGCPercent(-1)
 	//debug.SetGCPercent(10)
 	//debug.SetGCPercent(100)
 	//debug.SetGCPercent(1000)
-
-	// Запись в trace файл
-	f, _ := os.Create("trace.out")
-	trace.Start(f)
-	defer trace.Stop()
 
 	// смотрим в рантайме, сколько программа использует памяти
 	var memStat runtime.MemStats
