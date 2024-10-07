@@ -7,6 +7,8 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
+	"runtime"
+	"sync"
 	"syscall"
 	"time"
 )
@@ -66,14 +68,54 @@ func main() {
 }
 
 func handleRoot(w http.ResponseWriter, _ *http.Request) {
-	for i := 0; i < 100; i++ {
-		s := new(MyStruct)
-		for j := 0; j < len(s.data); j++ {
-			s.data[j] = byte(i)
-		}
-		fmt.Printf("Allocated %d MB\n", i+1)
+	//for i := 0; i < 100; i++ {
+	//	s := new(MyStruct)
+	//	for j := 0; j < len(s.data); j++ {
+	//		s.data[j] = byte(i)
+	//	}
+	//	fmt.Printf("Allocated %d MB\n", i+1)
+	//}
+
+	wg := sync.WaitGroup{}
+
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			fmt.Println(i)
+		}()
+		runtime.Gosched()
 	}
+
+	wg.Wait()
 
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("Hello"))
+}
+
+func Fast() int {
+	acc := new(int)
+	for i := 0; i < 10; i++ {
+		acc2 := new(int)
+		*acc2 = *acc + 1
+		acc = acc2
+	}
+	return *acc
+}
+
+func Slow() int {
+	acc := new(int)
+	for i := 0; i < 1000; i++ {
+		acc2 := new(int)
+		*acc2 = *acc + 1
+		acc = acc2
+	}
+	return *acc
+}
+
+func OnStack() {
+	for i := 0; i < 1000; i++ {
+		a := 100
+		_ = a
+	}
 }
