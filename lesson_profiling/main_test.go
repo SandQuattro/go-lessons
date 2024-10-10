@@ -28,3 +28,21 @@ func BenchmarkOnStack(b *testing.B) {
 		OnStack()
 	}
 }
+
+func BenchmarkSlowString(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		SlowString()
+	}
+}
+
+func BenchmarkFastString(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		FastString()
+	}
+}
+
+func BenchmarkVeryFastString(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		VeryFastString()
+	}
+}

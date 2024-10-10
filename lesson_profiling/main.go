@@ -7,6 +7,7 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -117,4 +118,24 @@ func OnStack() {
 		a := 100
 		_ = a
 	}
+}
+
+func SlowString() string {
+	a := ""
+	a += "1"
+	a += "2"
+	a += "3"
+	return a
+}
+
+func FastString() string {
+	a := new(strings.Builder)
+	a.WriteString("1")
+	a.WriteString("2")
+	a.WriteString("3")
+	return a.String()
+}
+
+func VeryFastString() string {
+	return "1" + "2" + "3"
 }
