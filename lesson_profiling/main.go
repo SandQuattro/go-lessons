@@ -2,13 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
-	"runtime"
-	"sync"
 	"syscall"
 	"time"
 )
@@ -60,34 +58,35 @@ func main() {
 
 	go func() {
 		http.HandleFunc("/", handleRoot)
+		log.Println("Start server at port 8080")
 		_ = server.ListenAndServe()
 	}()
 
 	<-ctx.Done()
-	fmt.Println("Server is shutting down... bye, bye")
+	log.Println("Server is shutting down... bye, bye")
 }
 
 func handleRoot(w http.ResponseWriter, _ *http.Request) {
-	//for i := 0; i < 100; i++ {
-	//	s := new(MyStruct)
-	//	for j := 0; j < len(s.data); j++ {
-	//		s.data[j] = byte(i)
-	//	}
-	//	fmt.Printf("Allocated %d MB\n", i+1)
-	//}
-
-	wg := sync.WaitGroup{}
-
-	for i := 0; i < 10; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			fmt.Println(i)
-		}()
-		runtime.Gosched()
+	for i := 0; i < 100; i++ {
+		s := new(MyStruct)
+		for j := 0; j < len(s.data); j++ {
+			s.data[j] = byte(i)
+		}
+		log.Printf("Allocated %d MB\n", i+1)
 	}
 
-	wg.Wait()
+	//wg := sync.WaitGroup{}
+	//
+	//for i := 0; i < 10; i++ {
+	//	wg.Add(1)
+	//	go func() {
+	//		defer wg.Done()
+	//		log.Println(i)
+	//	}()
+	//	runtime.Gosched()
+	//}
+	//
+	//wg.Wait()
 
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("Hello"))
